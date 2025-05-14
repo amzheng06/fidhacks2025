@@ -49,26 +49,16 @@ const AdvancedChatbotUI = () => {
   };
 
   const sendToOpenAI = async () => {
-    try {
-      const response = await axios.post('https://api.openai.com/v1/chat/completions', {
-        model: 'gpt-3.5-turbo',
-        messages: [
-          { role: 'system', content: "You are Sierra, a warm and friendly career guide helping young professionals." },
-          { role: 'user', content: `I am a ${userData.role} interested in ${userData.interests}. My strengths are ${userData.strengths.join(",")} and my weaknesses are ${userData.weaknesses.join(",")}. I value ${userData.values.join(",")} and my goal is ${userData.goals}. Can you help me with a 5-step pathway, with 5 achievable bullet point sub-tasks, to achieve my goal?` }
-        ]
-      }, {
-        headers: { Authorization: `Bearer ${process.env.REACT_APP_OPENAI_API_KEY}` }
-      });
+  try {
+    const response = await axios.post("/api/openai", userData);
+    const botReply = response.data.reply;
+    setMessages((prev) => [...prev, { text: botReply, sender: 'bot' }]);
+    parsePathway(botReply);
+  } catch (error) {
+    setMessages((prev) => [...prev, { text: "Sorry, I couldn't connect to the AI service.", sender: 'bot' }]);
+  }
+};
 
-      const botReply = response.data.choices[0].message.content;
-      setMessages((prev) => [...prev, { text: botReply, sender: 'bot' }]);
-      
-      parsePathway(botReply);
-
-    } catch (error) {
-      setMessages((prev) => [...prev, { text: "Sorry, I couldn't connect to the AI service.", sender: 'bot' }]);
-    }
-  };
 
   const generateContextualReply = () => {
     switch (currentStep) {
