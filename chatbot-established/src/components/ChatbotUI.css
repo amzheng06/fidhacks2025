@@ -1,0 +1,132 @@
+/* Chatbot UI Container */
+.chat-container {
+  width: 393px;
+  height: 852px;
+  background-size: cover;
+  background-position: center;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 10px;
+  overflow: hidden;
+  position: relative;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+/* Avatar Styling */
+.avatar {
+  width: 150px;
+  height: auto;
+  margin-bottom: 0; /* Remove margin-bottom to avoid space between avatar and chatbox */
+  align-self: flex-start;
+  margin-left: 15px;
+}
+
+/* Chatbox Styling */
+.chatbox {
+  width: 90%;
+  flex-grow: 1; /* This makes the chatbox take up available space */
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 0; /* Ensure no space above chatbox */
+  margin-bottom: 10px;
+  margin-left: 10px;
+  margin-right: 10px;
+  max-height: 70%; /* Optional, you can set a max height to avoid overflowing */
+}
+
+
+/* Message Styles */
+.user-message,
+.bot-message {
+  max-width: 70%;
+  padding: 10px 15px;
+  border-radius: 15px;
+  font-size: 14px;
+  line-height: 1.4;
+  position: relative;
+}
+
+.user-message {
+  align-self: flex-end;
+  background-color: #4c9ef1;
+  color: #fff;
+  border-bottom-right-radius: 0;
+}
+
+.bot-message {
+  align-self: flex-start;
+  background-color: #f7fcff;
+  color: #333;
+  border-bottom-left-radius: 0;
+}
+
+/* Input Styling */
+.input-container {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px;
+  background-color: rgba(255, 255, 255, 0.8);
+  position: absolute;
+  bottom: 0;
+  font-family: Arial, Helvetica, sans-serif
+}
+
+.input-container input {
+  flex: 1;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 20px;
+  outline: none;
+  margin-right: 10px;
+}
+
+.input-container button {
+  padding: 10px 15px;
+  background-color: #4c9ef1;
+  color: #fff;
+  border: none;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.input-container button:hover {
+  background-color: #3a7fd5;
+}
+
+button {
+  background-color: #4c9ef1;
+  color: #fff;
+  border: none;
+  padding: 8px 15px;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+
+.options-container {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 10px 0;
+}
+
+.options-container button {
+  padding: 10px 15px;
+  background-color: #4c9ef1;
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.options-container button:hover {
+  background-color: #3a7fd5;
+}
