@@ -101,29 +101,61 @@
 
 
 
+/* Pathway container styling */
 .pathway-container {
-  background-color: #f4f4f9;
-  border: 2px solid #ddd;
-  border-radius: 10px;
-  padding: 15px;
-  margin-top: 15px;
-  max-width: 350px;
-  text-align: left;
+  flex-grow: 1; /* This makes the chatbox take up available space */
+  margin-top: 20px;
+  padding: 10px;
+  background-color: #f9f9f9;
+  border-radius: 8px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  overflow-y: auto;
+  max-height: 70%; /* Optional, you can set a max height to avoid overflowing */
 }
 
-.pathway-step {
+.pathway-container h3 {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #333;
   margin-bottom: 10px;
 }
 
-.pathway-step-title {
-  font-weight: bold;
-  margin-bottom: 5px;
-  color: #3b5998;
+/* Each pathway step styling */
+.pathway-step {
+  margin-bottom: 15px;
+  background-color: #fff;
+  padding: 15px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
+/* Title for each pathway step */
+.pathway-step-title {
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: #2a9d8f; /* A nice green color */
+  margin-bottom: 8px;
+}
+
+/* Sub-goals (bullet points) styling */
 .pathway-subgoal {
-  margin-left: 10px;
-  font-size: 0.95rem;
-  color: #333;
+  margin: 5px 0;
+  font-size: 1rem;
+  color: #555;
+  list-style-type: none; /* Removes default bullets */
+  padding-left: 20px;
+  position: relative;
+}
+
+.pathway-subgoal::before {
+  content: '•'; /* Adds a custom bullet point */
+  color: #2a9d8f; /* Same green color as step title */
+  position: absolute;
+  left: 0;
+  top: 0;
+}
+
+.pathway-step ul {
+  padding-left: 0;
+  margin-top: 5px;
 }

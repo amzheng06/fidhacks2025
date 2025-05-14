@@ -50,40 +50,63 @@ const AdvancedChatbotUI = () => {
     }
   };
 
-  const sendToOpenAI = async () => {
-  try {
-    const response = await axios.post("/api/openai.js", {
-  prompt: messages,
-  apiKey: process.env.OPENAI_API_KEY,
-});
+  // Add a new state variable for OpenAI response
+const [openAIResponseReceived, setOpenAIResponseReceived] = useState(false);
 
-    const botReply = response.data.reply;
+const sendToOpenAI = async () => {
+  try {
+    // Construct the user query based on their data
+    const userQuery = `I'm a ${userData.role} interested in ${userData.interests}. 
+    My strengths are ${userData.strengths.join(", ")}, and my weaknesses are ${userData.weaknesses.join(", ")}. 
+    I value ${userData.values.join(", ")}, and in five years, my goal is to ${userData.goals}. 
+    Provide me with a five-step pathway towards this goal, incorporating my strengths, weaknesses, and values; list these as "1.", "2.", etc. 
+    Break each step into five achievable subtasks, demarcated by "-" before each subtask.`;
+
+    const response = await axios.post("https://api.openai.com/v1/chat/completions", 
+      {
+        model: "gpt-3.5-turbo",
+        messages: [{ role: "user", content: userQuery }]
+      },
+      {
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer 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
+` // Replace with your actual OpenAI API key
+        }
+      }
+    );
+
+    const botReply = response.data.choices[0].message.content.trim();
     setMessages((prev) => [...prev, { text: botReply, sender: 'bot' }]);
+    setOpenAIResponseReceived(true); // Set the flag to true
     parsePathway(botReply);
   } catch (error) {
+    console.error("Error connecting to OpenAI API:", error);
     setMessages((prev) => [...prev, { text: "Sorry, I couldn't connect to the AI service.", sender: 'bot' }]);
   }
 };
 
+// Update generateContextualReply to avoid replying again after OpenAI response
+const generateContextualReply = () => {
+  if (openAIResponseReceived) return ""; // Do nothing if OpenAI response is received
 
-  const generateContextualReply = () => {
-    switch (currentStep) {
-      case 'about_me':
-        return "";
-      case 'interests':
-        return `Nice, looks like you're a ${userData.role}. Tell me more - what are you interested in?`;
-      case 'strengths':
-        return `Awesome! Since you're interested in ${userData.interests}, what strengths do you bring to the table? (List them, separated by commas)`;
-      case 'values':
-        return `${userData.strengths} - amazing qualities and skills to have! To complement these strengths, what are the values you hold dear? (List them, separated by commas)`;
-      case 'weaknesses':
-        return `${userData.values} - it's so important to be driven by these values. Thanks for sharing! On the flip side, what are the areas you'd like to improve on?`;
-      case 'goals':
-        return `${userData.weaknesses} - I can definitely help you improve on those! Finally, where do you want to be in 5 years?`;
-      default:
-        return "";
-    }
-  };
+  switch (currentStep) {
+    case 'about_me':
+      return "";
+    case 'interests':
+      return `Nice, looks like you're a ${userData.role}. Tell me more - what are you interested in?`;
+    case 'strengths':
+      return `Awesome! Since you're interested in ${userData.interests}, what strengths do you bring to the table? (List them, separated by commas)`;
+    case 'values':
+      return `${userData.strengths} - amazing qualities and skills to have! To complement these strengths, what are the values you hold dear? (List them, separated by commas)`;
+    case 'weaknesses':
+      return `${userData.values} - it's so important to be driven by these values. Thanks for sharing! On the flip side, what are the areas you'd like to improve on? (List them, separated by commas)`;
+    case 'goals':
+      return `${userData.weaknesses} - I can definitely help you improve on those! Finally, where do you want to be in 5 years?`;
+    default:
+      return "";
+  }
+};
 
   const generatePlaceholderText = () => {
     switch (currentStep) {
@@ -104,14 +127,32 @@ const AdvancedChatbotUI = () => {
     }
   };
 
-  const parsePathway = (text) => {
-    const steps = text.split(/\n?\d\./).slice(1).map(step => {
-      const [title, ...subGoals] = step.split(/- |• /).map(s => s.trim()).filter(Boolean);
-      return { title: title.trim(), subGoals };
-    });
-    setPathway(steps);
-  };
-  
+  // Improved parsePathway to correctly format the OpenAI response
+const parsePathway = (text) => {
+  // Regular expression to capture steps starting with numbers
+  const steps = text.match(/(\d+\.\s.*?)(?=\d+\.\s|$)/gs);
+
+  if (!steps) {
+    console.error("Could not parse pathway from text:", text);
+    setPathway([]);
+    return;
+  }
+
+  const formattedSteps = steps.map((step) => {
+    const [title, ...subTasks] = step
+      .split(/\n(?=[-•])/) // Split by new line before a bullet point
+      .map(s => s.trim())
+      .filter(Boolean);
+
+    return {
+      title: title.replace(/^\d+\.\s*/, '').trim(), // Remove the step number
+      subGoals: subTasks.map(task => task.replace(/^[-•]\s*/, '').trim()) // Clean bullet points
+    };
+  });
+
+  setPathway(formattedSteps);
+};
+
   return (
     <div className="chat-container">
       
@@ -128,21 +169,22 @@ const AdvancedChatbotUI = () => {
       </div>
       
 
-      {pathway.length > 0 && (
-    <div className="pathway-container">
-      <h3>Your 5-Step Pathway:</h3>
-      {pathway.map((step, index) => (
-        <div key={index} className="pathway-step">
-          <div className="pathway-step-title">{index + 1}. {step.title}</div>
-          <ul>
-            {step.subGoals.map((subGoal, subIndex) => (
-              <li key={subIndex} className="pathway-subgoal">{subGoal}</li>
-            ))}
-          </ul>
-        </div>
-      ))}
-    </div>
-  )}
+    {pathway.length > 0 && (
+  <div className="pathway-container">
+    <h3>Your 5-Step Pathway:</h3>
+    {pathway.map((step, index) => (
+      <div key={index} className="pathway-step">
+        <div className="pathway-step-title">{index + 1}. {step.title}</div>
+        <ul>
+          {step.subGoals.map((subGoal, subIndex) => (
+            <li key={subIndex} className="pathway-subgoal">{subGoal}</li>
+          ))}
+        </ul>
+      </div>
+    ))}
+  </div>
+)}
+
 
       <div className="input-container">
         <input
