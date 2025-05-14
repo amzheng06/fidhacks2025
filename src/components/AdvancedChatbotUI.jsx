@@ -70,7 +70,8 @@ const sendToOpenAI = async () => {
       {
         headers: {
           "Content-Type": "application/json",
-          "Authorization": `Bearer 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
+          "Authorization": `Bearer OPENAI_API_KEY
+
 ` // Replace with your actual OpenAI API key
         }
       }
