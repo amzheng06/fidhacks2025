@@ -1,5 +1,8 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import './ChatbotUI.css';
+import avatarImage from '../assets/sierra2.png';
+
 
 const AdvancedChatbotUI = () => {
   const [messages, setMessages] = useState([{ text: "Hi there! I'm Sierra, your friendly guide for your Summit climb. Let's get to know each other. To start, can you tell me about yourself?", sender: 'bot' }]);
@@ -12,7 +15,6 @@ const AdvancedChatbotUI = () => {
     if (!userInput.trim()) return;
 
     setMessages([...messages, { text: userInput, sender: 'user' }]);
-
     handleUserResponse(userInput);
     setUserInput('');
   };
@@ -108,25 +110,35 @@ const AdvancedChatbotUI = () => {
   
   return (
     <div className="chat-container">
+      
+      <img src={avatarImage} alt="Avatar" className="avatar" />
+
       <div className="chatbox">
         {messages.map((msg, index) => (
           <div key={index} className={msg.sender === 'user' ? 'user-message' : 'bot-message'}>
             {msg.text}
           </div>
         ))}
+      
         <div className="bot-message">{generateContextualReply()}</div>
       </div>
+      
 
-      <div className="pathway-display">
-        {pathway.length > 0 && pathway.map((step, index) => (
-          <div key={index} className="step">
-            <h4>{index + 1}. {step.title}</h4>
-            <ul>
-              {step.subGoals.map((goal, idx) => <li key={idx}>{goal}</li>)}
-            </ul>
-          </div>
-        ))}
-      </div>
+      {pathway.length > 0 && (
+    <div className="pathway-container">
+      <h3>Your 5-Step Pathway:</h3>
+      {pathway.map((step, index) => (
+        <div key={index} className="pathway-step">
+          <div className="pathway-step-title">{index + 1}. {step.title}</div>
+          <ul>
+            {step.subGoals.map((subGoal, subIndex) => (
+              <li key={subIndex} className="pathway-subgoal">{subGoal}</li>
+            ))}
+          </ul>
+        </div>
+      ))}
+    </div>
+  )}
 
       <div className="input-container">
         <input
