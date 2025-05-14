@@ -12,8 +12,9 @@ export default async function handler(req, res) {
       prompt: req.body.prompt,
       max_tokens: 100,
     });
-    res.status(200).json({ reply: response.data.choices[0].text });
+    res.status(200).json({ reply: response.data.choices[0].text.trim() });
   } catch (error) {
+    console.error("OpenAI API Error:", error);
     res.status(500).json({ reply: "Error connecting to OpenAI API" });
   }
 }

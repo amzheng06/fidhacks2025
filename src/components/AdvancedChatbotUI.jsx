@@ -52,7 +52,7 @@ const AdvancedChatbotUI = () => {
 
   const sendToOpenAI = async () => {
   try {
-    const response = await axios.post("/api/openai", {
+    const response = await axios.post("/api/openai.js", {
   prompt: messages,
   apiKey: process.env.OPENAI_API_KEY,
 });
