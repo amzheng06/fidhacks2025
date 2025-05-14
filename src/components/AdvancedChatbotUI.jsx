@@ -52,7 +52,11 @@ const AdvancedChatbotUI = () => {
 
   const sendToOpenAI = async () => {
   try {
-    const response = await axios.post("/api/openai", userData);
+    const response = await axios.post("/api/openai", {
+  prompt: messages,
+  apiKey: process.env.OPENAI_API_KEY,
+});
+
     const botReply = response.data.reply;
     setMessages((prev) => [...prev, { text: botReply, sender: 'bot' }]);
     parsePathway(botReply);
